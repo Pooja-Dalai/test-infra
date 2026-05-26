@@ -12,26 +12,23 @@ periodics:
       bucket: ppc64le-kubernetes
       path_strategy: explicit
     gcs_credentials_secret: gcs-credentials
-  interval: 12h
+  cron: "0 2,14 * * *"
   extra_refs:
   - base_ref: main
     org: kubernetes-sigs
     repo: provider-ibmcloud-test-infra
-  - base_ref: master
-    org: kubernetes-sigs
-    repo: kubetest2
     workdir: true
   - base_ref: master
     org: kubernetes
     repo: perf-tests
   spec:
     containers:
-    - image: quay.io/powercloud/all-in-one:0.7
+    - image: us-central1-docker.pkg.dev/k8s-staging-test-infra/images/kubekins-e2e:v20260512-1f34ef0df3-master
       resources:
         requests:
-          cpu: "3000m"
+          cpu: "1500m"
         limits:
-          cpu: "3000m"
+          cpu: "1500m"
       command:
       - /bin/bash
       args:
@@ -45,19 +42,11 @@ periodics:
         export PATH=$GOPATH/bin:$PATH
         export GO111MODULE=on
 
-        make install install-tester-clusterloader2
-
-        pushd ../provider-ibmcloud-test-infra
         make install-deployer-tf
-        popd
 
         TIMESTAMP=$(date +%s)
         K8S_BUILD_VERSION=$(curl https://storage.googleapis.com/k8s-release-dev/ci/latest.txt)
         jq --arg key0 'k8s-build-version' --arg value0 $K8S_BUILD_VERSION '. | .[$key0]=$value0' <<<'{}' > $ARTIFACTS/metadata.json
-
-        # kubectl needed for the e2e tests
-        curl -sSL https://dl.k8s.io/ci/$K8S_BUILD_VERSION/bin/linux/`go env GOARCH`/kubectl > /usr/local/bin/kubectl
-        chmod +x /usr/local/bin/kubectl
 
         echo CONTAINER_IMAGE: "registry.k8s.io/pause:3.10.1" >> $GOPATH/src/github.com/kubernetes/perf-tests/clusterloader2/testing/overrides/node_containerd.yaml
 
@@ -93,26 +82,23 @@ periodics:
       bucket: ppc64le-kubernetes
       path_strategy: explicit
     gcs_credentials_secret: gcs-credentials
-  interval: 24h
+  cron: "0 3 * * *"
   extra_refs:
   - base_ref: main
     org: kubernetes-sigs
     repo: provider-ibmcloud-test-infra
-  - base_ref: master
-    org: kubernetes-sigs
-    repo: kubetest2
     workdir: true
   - base_ref: master
     org: kubernetes
     repo: perf-tests
   spec:
     containers:
-    - image: quay.io/powercloud/all-in-one:0.7
+    - image: us-central1-docker.pkg.dev/k8s-staging-test-infra/images/kubekins-e2e:v20260512-1f34ef0df3-master
       resources:
         requests:
-          cpu: "3000m"
+          cpu: "1500m"
         limits:
-          cpu: "3000m"
+          cpu: "1500m"
       command:
       - /bin/bash
       args:
@@ -126,19 +112,11 @@ periodics:
         export PATH=$GOPATH/bin:$PATH
         export GO111MODULE=on
 
-        make install install-tester-exec
-
-        pushd ../provider-ibmcloud-test-infra
         make install-deployer-tf
-        popd
 
         TIMESTAMP=$(date +%s)
         K8S_BUILD_VERSION=$(curl https://storage.googleapis.com/k8s-release-dev/ci/latest.txt)
         jq --arg key0 'k8s-build-version' --arg value0 $K8S_BUILD_VERSION '. | .[$key0]=$value0' <<<'{}' > $ARTIFACTS/metadata.json
-
-        # kubectl needed for the e2e tests
-        curl -sSL https://dl.k8s.io/ci/$K8S_BUILD_VERSION/bin/linux/`go env GOARCH`/kubectl > /usr/local/bin/kubectl
-        chmod +x /usr/local/bin/kubectl
 
         kubetest2 tf --powervs-dns k8s-tests \
           --powervs-image-name CentOS-Stream-9 \
