@@ -41,6 +41,10 @@ periodics:
                   exit 1
               fi
               echo "Done without failure"
+          resources:
+            limits:
+              cpu: "4000m"
+              memory: "340Mi"
   - name: periodic-containerd-crun-v2-test-powerVS
     labels:
        preset-containerd-powervs: "true"
@@ -83,3 +87,7 @@ periodics:
                   exit 1
               fi
               echo "Done without failure"
+          resources:
+            limits:
+              cpu: "4000m"
+              memory: "340Mi"
