@@ -34,7 +34,10 @@ periodics:
 
             # Stop docker
             ./dockerctl.sh stop
-        resources: {}
+        resources:
+          limits:
+            cpu: "4000m"
+            memory: "340Mi"
         securityContext:
           privileged: true
       restartPolicy: Never
