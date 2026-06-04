@@ -133,18 +133,17 @@ postsubmits:
         - base_ref: main
           org: kubernetes-sigs
           repo: provider-ibmcloud-test-infra
-        - base_ref: master
-          org: kubernetes-sigs
-          repo: kubetest2
           workdir: true
       spec:
         containers:
-          - image: quay.io/powercloud/all-in-one:0.7
+          - image: us-central1-docker.pkg.dev/k8s-staging-test-infra/images/kubekins-e2e:v20260512-1f34ef0df3-master
             resources:
               requests:
-                cpu: "4000m"
+                cpu: "1500m"
+                memory: "8Gi"
               limits:
-                cpu: "4000m"
+                cpu: "1500m"
+                memory: "8Gi"
             command:
               - /bin/bash
             args:
@@ -159,12 +158,7 @@ postsubmits:
                 go version
                 go env
 
-                make install
-                make install-tester-exec
-
-                pushd ../provider-ibmcloud-test-infra
                 make install-deployer-tf
-                popd
 
 
                 TIMESTAMP=$(date +%s)
@@ -179,8 +173,6 @@ postsubmits:
                 # e2e.test binary needed for running tests using k8s tests bits from IBM s3 storage
                 URL=https://$S3_SERVER/$BUCKET/$DIRECTORY/$K8S_BUILD_VERSION
                 wget -qO- $URL/kubernetes-test-linux-ppc64le.tar.gz | tar xz -C /usr/local/bin --strip-components=3
-                # kubectl needed for the e2e tests
-                wget -qO- $URL/kubernetes-client-linux-ppc64le.tar.gz | tar xz -C /usr/local/bin --strip-components=3
 
                 set +o errexit
                 kubetest2 tf --powervs-dns k8s-tests \
