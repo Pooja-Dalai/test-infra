@@ -13,7 +13,6 @@ postsubmits:
           org: openshift
           repo: kubernetes
           workdir: true
-          clone_depth: 1
       spec:
         containers:
           - image: quay.io/powercloud/all-in-one:0.7
@@ -69,7 +68,6 @@ postsubmits:
           org: openshift
           repo: origin
           workdir: true
-          clone_depth: 1
       spec:
         containers:
           - image: quay.io/powercloud/all-in-one:0.7
