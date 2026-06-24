@@ -37,9 +37,9 @@ postsubmits:
                 rm -rf /usr/local/go
                 tar -C /usr/local -xzf /tmp/golang.tar.gz
                 # Storing go version of environment
-                go_version_env=`go version | cut -d ' ' -f4`
-                # go version of development master go will be of the kind "go version devel go1.21-39c5070712 Thu Jul 6 23:23:41 2023 +0000 linux/ppc64le"
-                # hence the cut at f4 will store go1.21-39c5070712 to go_version_env variable
+                go_version_env=`go version | cut -d ' ' -f3`
+                # go version of development master go will be of the kind "go version go1.27-devel_9936a78b78 Mon May 11 14:06:40 2026 -0700 linux/ppc64le"
+                # hence the cut at f3 will store go1.27-devel_9936a78b78 to go_version_env variable
                 echo "The Go version of environment is $go_version_env"
 
                 export CGO_ENABLED=0
@@ -47,7 +47,7 @@ postsubmits:
                 KUBE_BUILD_PLATFORMS=linux/ppc64le make cross
 
                 # Check golang used for binary building
-                go_version_bin=`go version _output/bin/kube-apiserver | cut -d ' ' -f3`
+                go_version_bin=`go version _output/bin/kube-apiserver | cut -d ' ' -f2`
                 [[ "$go_version_env" == "$go_version_bin" ]] || { echo "The binary was not built with master go version"; exit 1; }
                 echo "The binaries are built with go version $go_version_bin"
 
@@ -111,11 +111,6 @@ postsubmits:
                 curl -X GET http://build-bot.prow:8090/build\?project\=$build_project\&commit\=$build_commit -o /tmp/golang.tar.gz
                 rm -rf /usr/local/go
                 tar -C /usr/local -xzf /tmp/golang.tar.gz
-                # Storing go version of environment
-                go_version_env=`go version | cut -d ' ' -f3`
-                # go version of development master go will be of the kind "go version devel go1.21-39c5070712 Thu Jul 6 23:23:41 2023 +0000 linux/ppc64le"
-                # hence the cut at f4 will store go1.21-39c5070712 to go_version_env variable
-                echo "The Go version of environment is $go_version_env"
 
                 go version
                 go env
@@ -138,18 +133,17 @@ postsubmits:
         - base_ref: main
           org: kubernetes-sigs
           repo: provider-ibmcloud-test-infra
-        - base_ref: master
-          org: kubernetes-sigs
-          repo: kubetest2
           workdir: true
       spec:
         containers:
-          - image: quay.io/powercloud/all-in-one:0.7
+          - image: us-central1-docker.pkg.dev/k8s-staging-test-infra/images/kubekins-e2e:v20260512-1f34ef0df3-master
             resources:
               requests:
-                cpu: "4000m"
+                cpu: "1500m"
+                memory: "8Gi"
               limits:
-                cpu: "4000m"
+                cpu: "1500m"
+                memory: "8Gi"
             command:
               - /bin/bash
             args:
@@ -164,12 +158,7 @@ postsubmits:
                 go version
                 go env
 
-                make install
-                make install-tester-exec
-
-                pushd ../provider-ibmcloud-test-infra
                 make install-deployer-tf
-                popd
 
 
                 TIMESTAMP=$(date +%s)
@@ -184,8 +173,6 @@ postsubmits:
                 # e2e.test binary needed for running tests using k8s tests bits from IBM s3 storage
                 URL=https://$S3_SERVER/$BUCKET/$DIRECTORY/$K8S_BUILD_VERSION
                 wget -qO- $URL/kubernetes-test-linux-ppc64le.tar.gz | tar xz -C /usr/local/bin --strip-components=3
-                # kubectl needed for the e2e tests
-                wget -qO- $URL/kubernetes-client-linux-ppc64le.tar.gz | tar xz -C /usr/local/bin --strip-components=3
 
                 set +o errexit
                 kubetest2 tf --powervs-dns k8s-tests \
