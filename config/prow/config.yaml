@@ -13,6 +13,12 @@ slack_reporter_configs:
       - error
     channel: prow-job-notifications
     report_template: 'Job {{.Spec.Job}} of type {{.Spec.Type}} ended with state {{.Status.State}}. <!subteam^S01E9J0G3EU> <{{.Status.URL}}|View logs>'
+  'knative-serving-main-periodic':
+    channel: prow-job-notifications
+    job_states_to_report: []
+  'knative-serving-release-1.22-periodic':
+    channel: prow-job-notifications
+    job_states_to_report: []
 
 in_repo_config:
   enabled:
