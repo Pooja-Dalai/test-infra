@@ -49,6 +49,8 @@ periodics:
               value: knative
             - name: KNATIVE_REPO
               value: eventing
+            - name: EVENTING_RECONCILER
+              value: "true"
             - name: KNATIVE_RELEASE
               value: main
             - name: SYSTEM_NAMESPACE
