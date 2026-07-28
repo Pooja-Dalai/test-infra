@@ -71,7 +71,7 @@ plank:
       index .Spec.Refs.Pulls 0}}{{.Author}}{{end}}).
   default_decoration_config_entries:
   - config:
-      timeout: 2h
+      timeout: 3h
       grace_period: 15s
       censor_secrets: true
       gcs_configuration:
