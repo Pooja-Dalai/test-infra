@@ -136,7 +136,7 @@ postsubmits:
           workdir: true
       spec:
         containers:
-          - image: us-central1-docker.pkg.dev/k8s-staging-test-infra/images/kubekins-e2e:v20260512-1f34ef0df3-master
+          - image: us-central1-docker.pkg.dev/k8s-staging-test-infra/images/kubekins-e2e:v20260810-7619858115-master
             resources:
               requests:
                 cpu: "1500m"
