@@ -1,0 +1,29 @@
+periodics:
+  - name: periodic-containerd-powervs-cleanup
+    cluster: k8s-ppc64le-cluster
+    decorate: true
+    interval: 24h
+    spec:
+      containers:
+        - image: alpine:latest
+          command:
+            - /bin/sh
+          env:
+            - name: IBMCLOUD_APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: containerd-apikey
+                  key: apikey
+          args:
+            - -c
+            - |
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+              set -o xtrace
+
+              wget -q -O /usr/local/bin/pvsadm https://github.com/ppc64le-cloud/pvsadm/releases/download/v0.1.18/pvsadm-linux-ppc64le
+              chmod +x /usr/local/bin/pvsadm
+
+              # cleanup all the containerd VMs created in the containerd PowerVS workspace before 24hrs
+              pvsadm purge vms --instance-id ed5cf7c9-160b-4f48-aa28-eab463e00666 --before 24h --regexp "rdr-runtimes-containerd-*" --ignore-errors --no-prompt
